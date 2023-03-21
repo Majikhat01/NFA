@@ -166,7 +166,33 @@ public class NFA implements NFAInterface {
 
     @Override
     public boolean addTransition(String fromState, Set<String> toStates, char onSymb) {
-        return false;
+        boolean transitionAdded = false;
+
+        NFAState tempFromState = this.getState(fromState);
+        Set<NFAState> tempToStates = new LinkedHashSet<>();
+        for (String name : toStates) {
+            if (states.contains(getState(name))) {
+                tempToStates.add(this.getState(name));
+            }
+        }
+
+
+
+        if (tempFromState == null) {
+            transitionAdded = false;
+        } else if (tempToStates == null || tempToStates.isEmpty()) {
+            transitionAdded = false;
+        } else if (!sigma.contains(onSymb) && onSymb != 'e') {
+            transitionAdded = false;
+        } else {
+            for (NFAState state : states) {
+                if (state.getName().equals(fromState)) {
+                    state.setTransition(onSymb, tempToStates);
+                    transitionAdded = true;
+                }
+            }
+        }
+        return transitionAdded;
     }
 
     @Override

@@ -40,6 +40,7 @@ public class NFAState extends State {
     }
 
     public Set<NFAState> toStates(char c) {
-        return null;
+        Set<NFAState> returnStates = transitions.get(c);
+        return returnStates;
     }
 }
