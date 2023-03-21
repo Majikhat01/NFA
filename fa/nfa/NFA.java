@@ -2,32 +2,68 @@ package fa.nfa;
 
 import fa.State;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class NFA implements NFAInterface {
 
     //Private methods
-
+    private Set<NFAState> states = new LinkedHashSet();
+    private Set<Character> sigma = new LinkedHashSet<>();
+    private Set<NFAState> finalStates = new LinkedHashSet<>();
 
     //Public methods
+    public NFA() {
+    }
+
     @Override
     public boolean addState(String name) {
-        return false;
+        for (NFAState state : states) {
+            if (state.getName().equals(name)) {
+                return false;
+            }
+        }
+        states.add(new NFAState(name));
+        return true;
     }
 
     @Override
     public boolean setFinal(String name) {
-        return false;
+        boolean added = false;
+        for (NFAState state : states) {
+            if (state.getName().equals(name)) {
+                finalStates.add(state);
+                added = true;
+            }
+        }
+        return added;
     }
 
     @Override
     public boolean setStart(String name) {
-        return false;
+        boolean startSet = false;
+
+        if (states.contains(getState(name))) {
+
+            for (NFAState state : states) {
+                if (state.isStart) {
+                    state.setStartState(false);
+                }
+            }
+
+            for (NFAState state : states) {
+                if (state.getName().equals(name)) {
+                    state.setStartState(true);
+                    startSet = true;
+                }
+            }
+        }
+        return startSet;
     }
 
     @Override
     public void addSigma(char symbol) {
-
+        sigma.add(symbol);
     }
 
     @Override
@@ -55,22 +91,41 @@ public class NFA implements NFAInterface {
 
     @Override
     public Set<Character> getSigma() {
-        return null;
+        return new LinkedHashSet<Character>(sigma);
     }
 
     @Override
-    public State getState(String name) {
+    public NFAState getState(String name) {
+        for (NFAState state : states) {
+            if (state.getName().equals(name)) {
+                return state;
+            }
+        }
         return null;
     }
 
     @Override
     public boolean isFinal(String name) {
-        return false;
+        boolean isAFinal = false;
+        for (NFAState state : finalStates) {
+            if (state.getName().equals(name)) {
+                isAFinal = true;
+                break;
+            }
+        }
+        return isAFinal;
     }
 
     @Override
     public boolean isStart(String name) {
-        return false;
+        boolean isTheStart = false;
+        for (NFAState state: states) {
+            if (state.getStartState() && state.getName().equals(name)) {
+                isTheStart = true;
+                break;
+            }
+        }
+        return isTheStart;
     }
 
     @Override
