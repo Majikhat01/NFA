@@ -2,9 +2,7 @@ package fa.nfa;
 
 import fa.State;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 public class NFA implements NFAInterface {
 
@@ -86,66 +84,80 @@ public class NFA implements NFAInterface {
         in any accepting state (that includes when no alive copies remain).
          */
 
-
+        //Step 1: Initially queue and visited arrays are empty
         //Initializing NFA states and accept boolean
         boolean doesAccept = false;
         NFAState startState = null;
         NFAState currentState = new NFAState("current");
+        LinkedList<NFAState> stateQueue = new LinkedList<>();
 
+        //Step 2: Push node 0 into queue and mark it visited
         for (NFAState state : states) {
             if (state.isStart) {
                 startState = state;
+                stateQueue.add(state);
+                state.visited = true;
                 break;
+            } else {
+                state.visited = false;
             }
         }
-        //creating the start state
+
         LinkedHashSet<NFAState> currentStates = new LinkedHashSet<>();
         currentStates.add(startState);
+        currentState = stateQueue.remove();
 
         //traversing the BFS
         for (int i = 0; i < s.length(); i++) {
-            //currentState = currentState.getTransition(getState(String.valueOf(s.charAt(i))));
 
-            for (NFAState state : currentStates) {
-                LinkedHashSet<NFAState> tempState = new LinkedHashSet<>();
 
-                //Step 1: Initially queue and visited arrays are empty
+            //Step 3: Remove node 0 from the front of queue and visit the unvisited neighbours and push them into queue
+            if (currentState.getTransition(s.charAt(i)) != null) {
+                stateQueue.addAll(currentState.getTransition(s.charAt(i)));
+            }
+            if (currentState.getTransition('e') != null) {
+                stateQueue.addAll(currentState.getTransition('e'));
+            }
+            currentState.visited = true;
 
-                //Step 2: Push node 0 into queue and mark it visited
-
-                //Step 3: Remove node 0 from the front of queue and visit the unvisited neighbours and push them into pueue
-
-                //Step 4: Remove node 1 from the front of queue and visit the unvisited neighbours and push them into queue
-
-                //Step 5: Remove node 2 from the front of queue and visit the unvisited neighbours and push them into queue
-
-                //Step 6: Remove node 3 from the front of the queue and visit the unvisited neighbours and push them into queue
-
-                //Step 7: Remove node 4 from the front of the queue and visit the unvisited neighbours and push them into queue
-
-                //After queue becomes empty, so, terminate these process of iteration
-
-                //logic for the provided example in the p2 description
-//                if (state.getName().equals("a")) {
-//                    if (s.charAt(i) == '0') {
-//                        tempState.add(getState("a"));
-//                    } else if (s.charAt(i) == '1') {
-//                        tempState.add(getState("b"));
-//                    }
-//                } else if (state.getName().equals("b")) {
-//                    if (s.charAt(i) == '0') {
-//                        tempState.add(getState("a"));
-//                    } else if (s.charAt(i) == '1') {
-//                        tempState.add(getState("b"));
-//                    }
-//                } else if (state.getName().equals("b")) {
-//                    if (s.charAt(i) == 'e') {
-//                        tempState.add(getState("a"));
-//                    }
-//                }
+            if (!stateQueue.isEmpty()) {
+                currentState = stateQueue.remove();
             }
         }
-        return false;
+
+        if (finalStates.contains(currentState)) {
+            doesAccept = true;
+        }
+
+            //Step 4: Remove node 1 from the front of queue and visit the unvisited neighbours and push them into queue
+
+            //Step 5: Remove node 2 from the front of queue and visit the unvisited neighbours and push them into queue
+
+            //Step 6: Remove node 3 from the front of the queue and visit the unvisited neighbours and push them into queue
+
+            //Step 7: Remove node 4 from the front of the queue and visit the unvisited neighbours and push them into queue
+
+            //After queue becomes empty, so, terminate these process of iteration
+
+            //logic for the provided example in the p2 description
+    //                if (state.getName().equals("a")) {
+    //                    if (s.charAt(i) == '0') {
+    //                        tempState.add(getState("a"));
+    //                    } else if (s.charAt(i) == '1') {
+    //                        tempState.add(getState("b"));
+    //                    }
+    //                } else if (state.getName().equals("b")) {
+    //                    if (s.charAt(i) == '0') {
+    //                        tempState.add(getState("a"));
+    //                    } else if (s.charAt(i) == '1') {
+    //                        tempState.add(getState("b"));
+    //                    }
+    //                } else if (state.getName().equals("b")) {
+    //                    if (s.charAt(i) == 'e') {
+    //                        tempState.add(getState("a"));
+    //                    }
+    //                }
+        return doesAccept;
     }
 
     @Override
