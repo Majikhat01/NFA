@@ -111,7 +111,7 @@ public class NFA implements NFAInterface {
         for (int i = 0; i < s.length(); i++) {
 
 
-            //Step 3: Remove node 0 from the front of queue and visit the unvisited neighbours and push them into queue
+            //Step 3: Remove node from the front of queue and visit the unvisited neighbours and push them into queue
             if (currentState.getTransition(s.charAt(i)) != null) {
                 stateQueue.addAll(currentState.getTransition(s.charAt(i)));
             }
@@ -125,38 +125,11 @@ public class NFA implements NFAInterface {
             }
         }
 
+        //After queue becomes empty, so, terminate these process of iteration
         if (finalStates.contains(currentState)) {
             doesAccept = true;
         }
 
-            //Step 4: Remove node 1 from the front of queue and visit the unvisited neighbours and push them into queue
-
-            //Step 5: Remove node 2 from the front of queue and visit the unvisited neighbours and push them into queue
-
-            //Step 6: Remove node 3 from the front of the queue and visit the unvisited neighbours and push them into queue
-
-            //Step 7: Remove node 4 from the front of the queue and visit the unvisited neighbours and push them into queue
-
-            //After queue becomes empty, so, terminate these process of iteration
-
-            //logic for the provided example in the p2 description
-    //                if (state.getName().equals("a")) {
-    //                    if (s.charAt(i) == '0') {
-    //                        tempState.add(getState("a"));
-    //                    } else if (s.charAt(i) == '1') {
-    //                        tempState.add(getState("b"));
-    //                    }
-    //                } else if (state.getName().equals("b")) {
-    //                    if (s.charAt(i) == '0') {
-    //                        tempState.add(getState("a"));
-    //                    } else if (s.charAt(i) == '1') {
-    //                        tempState.add(getState("b"));
-    //                    }
-    //                } else if (state.getName().equals("b")) {
-    //                    if (s.charAt(i) == 'e') {
-    //                        tempState.add(getState("a"));
-    //                    }
-    //                }
         return doesAccept;
     }
 
@@ -253,7 +226,63 @@ public class NFA implements NFAInterface {
         trace is {a, b} and |{a, b}| = 2.
          */
 
-        return 0;
+        boolean doesAccept = false;
+        NFAState startState = null;
+        NFAState currentState = new NFAState("current");
+        LinkedList<NFAState> stateQueue = new LinkedList<>();
+        int maxNumCopies = 0;
+
+        //Step 2: Push node 0 into queue and mark it visited
+        for (NFAState state : states) {
+            if (state.isStart) {
+                startState = state;
+                stateQueue.add(state);
+                state.visited = true;
+            } else {
+                state.visited = false;
+            }
+        }
+
+        LinkedHashSet<NFAState> currentStates = new LinkedHashSet<>();
+        currentStates.add(startState);
+        maxNumCopies = currentStates.size();
+        currentState = stateQueue.remove();
+
+        //traversing the BFS
+        for (int i = 0; i < s.length(); i++) {
+
+
+            //Step 3: Remove node from the front of queue and visit the unvisited neighbours and push them into queue
+            if (currentState.getTransition(s.charAt(i)) != null) {
+                stateQueue.addAll(currentState.getTransition(s.charAt(i)));
+            }
+            if (currentState.getTransition('e') != null) {
+                stateQueue.addAll(currentState.getTransition('e'));
+            }
+
+            currentState.visited = true;
+
+            if (stateQueue.contains(currentState)) {
+                currentStates.addAll(stateQueue);
+            }
+
+            if (!stateQueue.isEmpty()) {
+                currentStates.remove(currentState);
+                currentState = stateQueue.remove();
+                currentStates.add(currentState);
+                currentStates.addAll(eClosure(currentState));
+                if (currentStates.size() > maxNumCopies) {
+                    maxNumCopies = currentStates.size();
+                }
+            }
+        }
+
+        //After queue becomes empty, so, terminate these process of iteration
+        if (finalStates.contains(currentState)) {
+            doesAccept = true;
+        }
+
+        return maxNumCopies;
     }
 
     @Override
