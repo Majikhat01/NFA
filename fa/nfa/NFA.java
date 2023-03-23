@@ -323,6 +323,15 @@ public class NFA implements NFAInterface {
         determines if an NFA is actually a DFA, i.e., all of its transitions obey the rule’s of DFA transitions.
          */
 
+    boolean isDFA = false;
+        //TODO: find way to check the number of transitions per state is == 1 & check if there is not a 'e' transition within the states to determine if it is a DFA
+        for (NFAState state: states) {
+//          if (state.getTransition(key).size() == 1 && !state.getTransition(key).containsKey('e')) {
+//              isDFA = true;
+//              break;
+//          }
+        }
+
         return false;
     }
 }
