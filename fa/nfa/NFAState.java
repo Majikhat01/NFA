@@ -7,16 +7,16 @@ import java.util.*;
 
 /*
 In fa.nfa package NFAState class must extend fa.State abstract class. We recommend
-that you add an instance variable to model the state’s transitions with the following map
-Map<Character, Set<NFAState>>. If your implementation requires it, you can add addi-
-tional instance variables and methods to your NFAState class.
+that you add an instance variable to model the state’s transitions with the following
+Map<Character, Set<NFAState>>. If your implementation requires it, you can add additional
+ instance variables and methods to your NFAState class.
  */
 
 public class NFAState extends State {
 
     private Map<Character, Set<NFAState>> transitions = new HashMap<>();
-
     boolean isStart = false;
+    boolean visited = false;
 
     public NFAState(String name) {
         super(name);
@@ -27,8 +27,11 @@ public class NFAState extends State {
         this.transitions.put(onSymb, toState);
     }
 
-    public NFAState getTransition(NFAState key) {
-        return (NFAState) transitions.get(key);
+    public Set<NFAState> getTransition(Character key) {
+        if (transitions.get(key) != null) {
+            return transitions.get(key);
+        }
+        return null;
     }
 
     public void setStartState(boolean makeStart) {

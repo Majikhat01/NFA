@@ -4,11 +4,12 @@ import fa.State;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.Stack;
 
 public class NFA implements NFAInterface {
 
     //Private methods
-    private Set<NFAState> states = new LinkedHashSet();
+    private Set<NFAState> states = new LinkedHashSet<>();
     private Set<Character> sigma = new LinkedHashSet<>();
     private Set<NFAState> finalStates = new LinkedHashSet<>();
 
@@ -86,12 +87,70 @@ public class NFA implements NFAInterface {
          */
 
 
+        //Initializing NFA states and accept boolean
+        boolean doesAccept = false;
+        NFAState startState = null;
+        NFAState currentState = new NFAState("current");
+
+        for (NFAState state : states) {
+            if (state.isStart) {
+                startState = state;
+                break;
+            }
+        }
+        //creating the start state
+        LinkedHashSet<NFAState> currentStates = new LinkedHashSet<>();
+        currentStates.add(startState);
+
+        //traversing the BFS
+        for (int i = 0; i < s.length(); i++) {
+            //currentState = currentState.getTransition(getState(String.valueOf(s.charAt(i))));
+
+            for (NFAState state : currentStates) {
+                LinkedHashSet<NFAState> tempState = new LinkedHashSet<>();
+
+                //Step 1: Initially queue and visited arrays are empty
+
+                //Step 2: Push node 0 into queue and mark it visited
+
+                //Step 3: Remove node 0 from the front of queue and visit the unvisited neighbours and push them into pueue
+
+                //Step 4: Remove node 1 from the front of queue and visit the unvisited neighbours and push them into queue
+
+                //Step 5: Remove node 2 from the front of queue and visit the unvisited neighbours and push them into queue
+
+                //Step 6: Remove node 3 from the front of the queue and visit the unvisited neighbours and push them into queue
+
+                //Step 7: Remove node 4 from the front of the queue and visit the unvisited neighbours and push them into queue
+
+                //After queue becomes empty, so, terminate these process of iteration
+
+                //logic for the provided example in the p2 description
+//                if (state.getName().equals("a")) {
+//                    if (s.charAt(i) == '0') {
+//                        tempState.add(getState("a"));
+//                    } else if (s.charAt(i) == '1') {
+//                        tempState.add(getState("b"));
+//                    }
+//                } else if (state.getName().equals("b")) {
+//                    if (s.charAt(i) == '0') {
+//                        tempState.add(getState("a"));
+//                    } else if (s.charAt(i) == '1') {
+//                        tempState.add(getState("b"));
+//                    }
+//                } else if (state.getName().equals("b")) {
+//                    if (s.charAt(i) == 'e') {
+//                        tempState.add(getState("a"));
+//                    }
+//                }
+            }
+        }
         return false;
     }
 
     @Override
     public Set<Character> getSigma() {
-        return new LinkedHashSet<Character>(sigma);
+        return new LinkedHashSet<>(sigma);
     }
 
     @Override
@@ -148,7 +207,28 @@ public class NFA implements NFAInterface {
         method that calls eClosure.
          */
 
-        return null;
+        Set<NFAState> eTransitions = new LinkedHashSet<>();
+        Stack<NFAState> statesToVisit = new Stack<>();
+        eTransitions.add(s);
+        statesToVisit.push(s);
+        NFAState currentState = new NFAState("start");
+
+        for (NFAState state : states) {
+            state.visited = false;
+        }
+
+        while (!statesToVisit.isEmpty()) {
+            currentState = statesToVisit.pop();
+            if (!currentState.visited) {
+                if (currentState.getTransition('e') != null) {
+                    eTransitions.addAll(currentState.getTransition('e'));
+                    statesToVisit.addAll(currentState.getTransition('e'));
+                }
+                currentState.visited = true;
+            }
+        }
+
+        return eTransitions;
     }
 
     @Override
