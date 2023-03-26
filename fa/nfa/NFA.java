@@ -87,51 +87,67 @@ public class NFA implements NFAInterface {
         //Step 1: Initially queue and visited arrays are empty
         //Initializing NFA states and accept boolean
         boolean doesAccept = false;
-        NFAState startState = null;
         NFAState currentState = new NFAState("current");
         LinkedList<NFAState> stateQueue = new LinkedList<>();
 
         //Step 2: Push node 0 into queue and mark it visited
         for (NFAState state : states) {
             if (state.isStart) {
-                startState = state;
-                stateQueue.add(state);
-                state.visited = true;
+                currentState = state;
                 break;
-            } else {
-                state.visited = false;
             }
         }
 
-        LinkedHashSet<NFAState> currentStates = new LinkedHashSet<>();
-        currentStates.add(startState);
-        currentState = stateQueue.remove();
+        LinkedHashSet<NFAState> stateCopies = new LinkedHashSet<>();
+        stateCopies.add(currentState);
 
         //traversing the BFS
         for (int i = 0; i < s.length(); i++) {
 
 
             //Step 3: Remove node from the front of queue and visit the unvisited neighbours and push them into queue
-            currentStates.addAll(eClosure(currentState));
-            stateQueue.addAll(currentStates);
+            stateCopies.addAll(eClosure(currentState));
+            for (NFAState state: stateCopies) {
+                if (!stateQueue.contains(state)) {
+                    stateQueue.add(state);
+                }
+            }
 
             if (currentState.getTransition(s.charAt(i)) != null) {
-                stateQueue.addAll(currentState.getTransition(s.charAt(i)));
-                currentStates.addAll(currentState.getTransition(s.charAt(i)));
+                for (NFAState state: currentState.getTransition(s.charAt(i))) {
+                    if (!stateQueue.contains(state)) {
+                        stateQueue.add(state);
+                    }
+                }
+
+                for (NFAState state: currentState.getTransition(s.charAt(i))) {
+                    if (!stateCopies.contains(state)) {
+                        stateCopies.add(state);
+                    }
+                }
             }
+
             if (currentState.getTransition('e') != null) {
                 stateQueue.addAll(currentState.getTransition('e'));
-                currentStates.addAll(currentState.getTransition(('e')));
+                stateCopies.addAll(currentState.getTransition(('e')));
             }
             currentState.visited = true;
 
-            if (!stateQueue.isEmpty()) {
-                //currentState = stateQueue.remove();
+            while (!stateQueue.isEmpty() || !currentState.visited) {
                 if (currentState.visited) {
-                    while (currentState.visited && i < s.length() - 1) {
-                        currentState = stateQueue.remove();
+                    currentState = stateQueue.remove();
+                } else if (currentState.getTransition('e') != null){
+                    for (NFAState state : currentState.getTransition('e')) {
+                        if (!stateCopies.contains(state)) {
+                            stateCopies.add(state);
+                        }
                     }
+                    currentState.visited = true;
                 }
+            }
+
+            for (NFAState state : states) {
+                state.visited = false;
             }
         }
 
@@ -334,15 +350,16 @@ public class NFA implements NFAInterface {
          */
 
     boolean isDFA = true;
-        //TODO: find way to check the number of transitions per state is == 1 & check if there is not a 'e' transition within the states to determine if it is a DFA
         for (NFAState state: states) {
             for (Character key: sigma) {
                 if (state.getTransition(key) != null && state.getTransition(key).size() > 1) {
                     isDFA = false;
+                    return isDFA;
                 }
             }
             if (state.getTransition('e') != null) {
                 isDFA = false;
+                return isDFA;
             }
         }
 
