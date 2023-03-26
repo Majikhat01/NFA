@@ -112,16 +112,26 @@ public class NFA implements NFAInterface {
 
 
             //Step 3: Remove node from the front of queue and visit the unvisited neighbours and push them into queue
+            currentStates.addAll(eClosure(currentState));
+            stateQueue.addAll(currentStates);
+
             if (currentState.getTransition(s.charAt(i)) != null) {
                 stateQueue.addAll(currentState.getTransition(s.charAt(i)));
+                currentStates.addAll(currentState.getTransition(s.charAt(i)));
             }
             if (currentState.getTransition('e') != null) {
                 stateQueue.addAll(currentState.getTransition('e'));
+                currentStates.addAll(currentState.getTransition(('e')));
             }
             currentState.visited = true;
 
             if (!stateQueue.isEmpty()) {
-                currentState = stateQueue.remove();
+                //currentState = stateQueue.remove();
+                if (currentState.visited) {
+                    while (currentState.visited && i < s.length() - 1) {
+                        currentState = stateQueue.remove();
+                    }
+                }
             }
         }
 
@@ -323,15 +333,19 @@ public class NFA implements NFAInterface {
         determines if an NFA is actually a DFA, i.e., all of its transitions obey the rule’s of DFA transitions.
          */
 
-    boolean isDFA = false;
+    boolean isDFA = true;
         //TODO: find way to check the number of transitions per state is == 1 & check if there is not a 'e' transition within the states to determine if it is a DFA
         for (NFAState state: states) {
-//          if (state.getTransition(key).size() == 1 && !state.getTransition(key).containsKey('e')) {
-//              isDFA = true;
-//              break;
-//          }
+            for (Character key: sigma) {
+                if (state.getTransition(key) != null && state.getTransition(key).size() > 1) {
+                    isDFA = false;
+                }
+            }
+            if (state.getTransition('e') != null) {
+                isDFA = false;
+            }
         }
 
-        return false;
+        return isDFA;
     }
 }

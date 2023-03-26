@@ -24,7 +24,11 @@ public class NFAState extends State {
 
     //handle transition
     public void setTransition(Character onSymb, Set<NFAState> toState) {
-        this.transitions.put(onSymb, toState);
+        if (transitions.containsKey(onSymb)) {
+            transitions.get(onSymb).addAll(toState);
+        } else {
+            this.transitions.put(onSymb, toState);
+        }
     }
 
     public Set<NFAState> getTransition(Character key) {
