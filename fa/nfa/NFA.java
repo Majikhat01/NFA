@@ -269,30 +269,30 @@ public class NFA implements NFAInterface {
     @Override
     public boolean addTransition(String fromState, Set<String> toStates, char onSymb) {
 
-        //
+        //create function variables
         boolean transitionAdded = false;
         NFAState tempFromState = this.getState(fromState);
         Set<NFAState> tempToStates = new LinkedHashSet<>();
 
         for (String name : toStates) {
-            if (states.contains(getState(name))) {
-                tempToStates.add(this.getState(name));
+            if (states.contains(getState(name))) { //check the set if each name exists as a state
+                tempToStates.add(this.getState(name)); //add it to the set
             } else {
-                return false;
+                return false; //if it doesn't exist, exit
             }
         }
 
-        if (tempFromState == null) {
+        if (tempFromState == null) { //check if fromState exists in the NFA
             return false;
-        } else if (tempToStates.isEmpty()) { //Assuming you can't have a transition to nothing
+        } else if (tempToStates.isEmpty()) { //check if it's trying to transition to nothing
             return false;
-        } else if (!sigma.contains(onSymb) && onSymb != 'e') {
+        } else if (!sigma.contains(onSymb) && onSymb != 'e') { //check if onSymb is in the sigma and isn't 'e'
             return false;
         } else {
             for (NFAState state : states) {
-                if (state.getName().equals(fromState)) {
+                if (state.getName().equals(fromState)) { //find the fromState and create the transition
                     state.setTransition(onSymb, tempToStates);
-                    transitionAdded = true;
+                    transitionAdded = true; //flag that it was added
                 }
             }
         }
@@ -300,20 +300,19 @@ public class NFA implements NFAInterface {
         return transitionAdded;
     }
 
+    //determines if an NFA is actually a DFA, i.e., all of its transitions obey the rule’s of DFA transitions.
     @Override
     public boolean isDFA() {
 
-        /*
-        determines if an NFA is actually a DFA, i.e., all of its transitions obey the rule’s of DFA transitions.
-         */
+        boolean isDFA = true;
 
-    boolean isDFA = true;
-        for (NFAState state: states) {
+        for (NFAState state: states) { //check each state's transitions for multiple states or 'e' transitions
             for (Character key: sigma) {
                 if (state.getTransition(key) != null && state.getTransition(key).size() > 1) {
                     return false;
                 }
             }
+
             if (state.getTransition('e') != null) {
                 return false;
             }
