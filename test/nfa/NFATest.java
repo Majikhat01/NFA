@@ -344,13 +344,88 @@ public class NFATest {
 	}
 
 	@Test
-	public void test4_5() {
+	public void test4_1() {
 		NFA nfa = nfa4();
 		assertTrue(nfa.accepts("caacb"));
 		assertTrue(nfa.accepts("abbccaab"));
 		assertTrue(nfa.accepts("ccaaacc"));
 		assertFalse(nfa.accepts("caacbb"));
 		assertFalse(nfa.accepts("accabcc"));
-		System.out.println("nfa1 accepts done");
+		System.out.println("nfa4 accepts done");
+	}
+
+	@Test
+	public void test4_2() {
+		NFA nfa = nfa4();
+		assertFalse(nfa.isDFA());
+		System.out.println("nfa4 isDFA done");
+	}
+
+	public NFA nfa5() {
+		NFA nfa = new NFA();
+
+		nfa.addSigma('a');
+		nfa.addSigma('b');
+
+		assertTrue(nfa.addState("q0"));
+		assertTrue(nfa.setStart("q0"));
+		assertTrue(nfa.addState("q1"));
+		assertTrue(nfa.addState("q2"));
+		assertTrue(nfa.setFinal("q2"));
+		assertTrue(nfa.addState("q3"));
+		assertTrue(nfa.addState("q4"));
+		assertTrue(nfa.setFinal("q4"));
+
+		assertTrue(nfa.addTransition("q0", Set.of("q1"), 'a'));
+		assertTrue(nfa.addTransition("q1", Set.of("q2"), 'a'));
+		assertTrue(nfa.addTransition("q2", Set.of("q2"), 'b'));
+
+		assertTrue(nfa.addTransition("q1", Set.of("q3"), 'b'));
+		assertTrue(nfa.addTransition("q3", Set.of("q4"), 'b'));
+		assertTrue(nfa.addTransition("q4", Set.of("q4"), 'a'));
+
+		return nfa;
+	}
+	@Test
+	public void test5_1() {
+	NFA nfa = nfa5();
+	assertTrue(nfa.isDFA());
+	System.out.println("nfa5 isDFA done");
+	}
+
+	public NFA nfa6() {
+		NFA nfa = new NFA();
+
+		nfa.addSigma('a');
+		nfa.addSigma('b');
+
+		assertTrue(nfa.addState("q0"));
+		assertTrue(nfa.setStart("q0"));
+		assertTrue(nfa.addState("q1"));
+		assertTrue(nfa.addState("q2"));
+		assertTrue(nfa.addState("q3"));
+		assertTrue(nfa.addState("q4"));
+		assertTrue(nfa.addState("q5"));
+		assertTrue(nfa.setFinal("q5"));
+
+		assertTrue(nfa.addTransition("q0", Set.of("q1"), 'a'));
+
+		assertTrue(nfa.addTransition("q1", Set.of("q2"), 'a'));
+		assertTrue(nfa.addTransition("q1", Set.of("q3"), 'b'));
+
+		assertTrue(nfa.addTransition("q3", Set.of("q2"), 'a'));
+		assertTrue(nfa.addTransition("q2", Set.of("q4"), 'b'));
+
+		assertTrue(nfa.addTransition("q4", Set.of("q5"), 'a'));
+		assertTrue(nfa.addTransition("q5", Set.of("q5"), 'b'));
+
+		return nfa;
+	}
+
+	@Test
+	public void test6_1() {
+	NFA nfa = nfa6();
+	assertTrue(nfa.isDFA());
+	System.out.println("nfa6 isDFA done");
 	}
 }
