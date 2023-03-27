@@ -1,7 +1,5 @@
 package fa.nfa;
 
-import fa.State;
-
 import java.util.*;
 
 public class NFA implements NFAInterface {
@@ -88,7 +86,7 @@ public class NFA implements NFAInterface {
         //Initializing NFA states and accept boolean
         boolean doesAccept = false;
         NFAState currentState = new NFAState("current");
-        LinkedList<NFAState> stateQueue = new LinkedList<>();
+        Set<NFAState> stateQueue = new LinkedHashSet<>();
 
         //Step 2: Push node 0 into queue and mark it visited
         for (NFAState state : states) {
@@ -98,62 +96,42 @@ public class NFA implements NFAInterface {
             }
         }
 
-        LinkedHashSet<NFAState> stateCopies = new LinkedHashSet<>();
+        Set<NFAState> stateCopies = new LinkedHashSet<>();
         stateCopies.add(currentState);
+//        stateCopies.addAll(eClosure(currentState));
 
         //traversing the BFS
         for (int i = 0; i < s.length(); i++) {
 
-
-            //Step 3: Remove node from the front of queue and visit the unvisited neighbours and push them into queue
-            stateCopies.addAll(eClosure(currentState));
-            for (NFAState state: stateCopies) {
-                if (!stateQueue.contains(state)) {
-                    stateQueue.add(state);
+            for (NFAState state : stateCopies) {
+                if (state.getTransition(s.charAt(i)) != null) {
+                    stateQueue.addAll(state.getTransition(s.charAt(i)));
                 }
             }
 
-            if (currentState.getTransition(s.charAt(i)) != null) {
-                for (NFAState state: currentState.getTransition(s.charAt(i))) {
-                    if (!stateQueue.contains(state)) {
-                        stateQueue.add(state);
-                    }
-                }
-
-                for (NFAState state: currentState.getTransition(s.charAt(i))) {
-                    if (!stateCopies.contains(state)) {
-                        stateCopies.add(state);
-                    }
-                }
+            if (stateCopies.size() == 1) {
+                stateQueue.addAll(eClosure(stateCopies.iterator().next()));
             }
 
-            if (currentState.getTransition('e') != null) {
-                stateQueue.addAll(currentState.getTransition('e'));
-                stateCopies.addAll(currentState.getTransition(('e')));
-            }
-            currentState.visited = true;
+            stateCopies.clear();
+            stateCopies.addAll(stateQueue);
+            stateQueue.clear();
 
-            while (!stateQueue.isEmpty() || !currentState.visited) {
-                if (currentState.visited) {
-                    currentState = stateQueue.remove();
-                } else if (currentState.getTransition('e') != null){
-                    for (NFAState state : currentState.getTransition('e')) {
-                        if (!stateCopies.contains(state)) {
-                            stateCopies.add(state);
-                        }
-                    }
-                    currentState.visited = true;
-                }
+            for (NFAState state : stateCopies) {
+                stateQueue.addAll(eClosure(state));
             }
 
-            for (NFAState state : states) {
-                state.visited = false;
-            }
+            stateCopies.addAll(stateQueue);
+            stateQueue.clear();
+
         }
 
         //After queue becomes empty, so, terminate these process of iteration
-        if (finalStates.contains(currentState)) {
-            doesAccept = true;
+        for (NFAState state : stateCopies) {
+            if (finalStates.contains(state)) {
+                doesAccept = true;
+                break;
+            }
         }
 
         return doesAccept;
@@ -222,7 +200,7 @@ public class NFA implements NFAInterface {
         Stack<NFAState> statesToVisit = new Stack<>();
         eTransitions.add(s);
         statesToVisit.push(s);
-        NFAState currentState = new NFAState("start");
+        NFAState currentState;
 
         for (NFAState state : states) {
             state.visited = false;
@@ -252,63 +230,53 @@ public class NFA implements NFAInterface {
         trace is {a, b} and |{a, b}| = 2.
          */
 
-        boolean doesAccept = false;
-        NFAState startState = null;
+        int maxCopies = 0;
         NFAState currentState = new NFAState("current");
-        LinkedList<NFAState> stateQueue = new LinkedList<>();
-        int maxNumCopies = 0;
+        Set<NFAState> stateQueue = new LinkedHashSet<>();
 
         //Step 2: Push node 0 into queue and mark it visited
         for (NFAState state : states) {
             if (state.isStart) {
-                startState = state;
-                stateQueue.add(state);
-                state.visited = true;
-            } else {
-                state.visited = false;
+                currentState = state;
+                break;
             }
         }
 
-        LinkedHashSet<NFAState> currentStates = new LinkedHashSet<>();
-        currentStates.add(startState);
-        maxNumCopies = currentStates.size();
-        currentState = stateQueue.remove();
+        Set<NFAState> stateCopies = new LinkedHashSet<>();
+        stateCopies.add(currentState);
+//        stateCopies.addAll(eClosure(currentState));
 
         //traversing the BFS
         for (int i = 0; i < s.length(); i++) {
 
-
-            //Step 3: Remove node from the front of queue and visit the unvisited neighbours and push them into queue
-            if (currentState.getTransition(s.charAt(i)) != null) {
-                stateQueue.addAll(currentState.getTransition(s.charAt(i)));
-            }
-            if (currentState.getTransition('e') != null) {
-                stateQueue.addAll(currentState.getTransition('e'));
-            }
-
-            currentState.visited = true;
-
-            if (stateQueue.contains(currentState)) {
-                currentStates.addAll(stateQueue);
-            }
-
-            if (!stateQueue.isEmpty()) {
-                currentStates.remove(currentState);
-                currentState = stateQueue.remove();
-                currentStates.add(currentState);
-                currentStates.addAll(eClosure(currentState));
-                if (currentStates.size() > maxNumCopies) {
-                    maxNumCopies = currentStates.size();
+            for (NFAState state : stateCopies) {
+                if (state.getTransition(s.charAt(i)) != null && s.charAt(i) != 'e') {
+                    stateQueue.addAll(state.getTransition(s.charAt(i)));
                 }
             }
+
+            if (stateCopies.size() == 1 && stateQueue.isEmpty()) {
+                stateQueue.addAll(eClosure(stateCopies.iterator().next()));
+            }
+
+            stateCopies.clear();
+            stateCopies.addAll(stateQueue);
+            stateQueue.clear();
+
+            for (NFAState state : stateCopies) {
+                stateQueue.addAll(eClosure(state));
+            }
+
+            stateCopies.addAll(stateQueue);
+            stateQueue.clear();
+
+            if (stateCopies.size() > maxCopies) {
+                maxCopies = stateCopies.size();
+            }
+
         }
 
-        //After queue becomes empty, so, terminate these process of iteration
-        if (finalStates.contains(currentState)) {
-            doesAccept = true;
-        }
-
-        return maxNumCopies;
+        return maxCopies;
     }
 
     @Override
@@ -353,13 +321,11 @@ public class NFA implements NFAInterface {
         for (NFAState state: states) {
             for (Character key: sigma) {
                 if (state.getTransition(key) != null && state.getTransition(key).size() > 1) {
-                    isDFA = false;
-                    return isDFA;
+                    return false;
                 }
             }
             if (state.getTransition('e') != null) {
-                isDFA = false;
-                return isDFA;
+                return false;
             }
         }
 
