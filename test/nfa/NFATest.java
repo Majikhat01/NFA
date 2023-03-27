@@ -350,7 +350,7 @@ public class NFATest {
 		assertTrue(nfa.accepts("abbccaab"));
 		assertTrue(nfa.accepts("ccaaacc"));
 		assertFalse(nfa.accepts("caacbb"));
-		assertFalse(nfa.accepts("accabc"));
+		assertFalse(nfa.accepts("accabcc"));
 		System.out.println("nfa1 accepts done");
 	}
 }

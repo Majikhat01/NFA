@@ -85,32 +85,32 @@ public class NFA implements NFAInterface {
         //Step 1: Initially queue and visited arrays are empty
         //Initializing NFA states and accept boolean
         boolean doesAccept = false;
-        NFAState currentState = new NFAState("current");
         Set<NFAState> stateQueue = new LinkedHashSet<>();
+        Set<NFAState> stateCopies = new LinkedHashSet<>();
 
         //Step 2: Push node 0 into queue and mark it visited
         for (NFAState state : states) {
             if (state.isStart) {
-                currentState = state;
+                stateCopies.add(state);
                 break;
             }
         }
 
-        Set<NFAState> stateCopies = new LinkedHashSet<>();
-        stateCopies.add(currentState);
-//        stateCopies.addAll(eClosure(currentState));
+        if (stateCopies.size() == 0) {
+            return false;
+        }
 
         //traversing the BFS
         for (int i = 0; i < s.length(); i++) {
+
+            if (stateCopies.size() == 1) {
+                stateCopies.addAll(eClosure(stateCopies.iterator().next()));
+            }
 
             for (NFAState state : stateCopies) {
                 if (state.getTransition(s.charAt(i)) != null) {
                     stateQueue.addAll(state.getTransition(s.charAt(i)));
                 }
-            }
-
-            if (stateCopies.size() == 1) {
-                stateQueue.addAll(eClosure(stateCopies.iterator().next()));
             }
 
             stateCopies.clear();
@@ -123,7 +123,6 @@ public class NFA implements NFAInterface {
 
             stateCopies.addAll(stateQueue);
             stateQueue.clear();
-
         }
 
         //After queue becomes empty, so, terminate these process of iteration
