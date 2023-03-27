@@ -298,4 +298,59 @@ public class NFATest {
 		System.out.println("nfa1 maxCopies done");
 	}
 
+	public NFA nfa4() {
+		NFA nfa = new NFA();
+
+		nfa.addSigma('a');
+		nfa.addSigma('b');
+		nfa.addSigma('c');
+
+		assertTrue(nfa.addState("q0"));
+		assertTrue(nfa.setStart("q0"));
+		assertTrue(nfa.addState("q1"));
+		assertTrue(nfa.addState("q2"));
+		assertTrue(nfa.addState("q3"));
+		assertTrue(nfa.addState("q4"));
+		assertTrue(nfa.setFinal("q4"));
+		assertTrue(nfa.addState("q5"));
+		assertTrue(nfa.setFinal("q5"));
+
+		assertFalse(nfa.addState("q0"));
+		assertFalse(nfa.setStart("q7"));
+		assertFalse(nfa.setFinal("q8"));
+
+		assertTrue(nfa.addTransition("q0", Set.of("q1"), 'e'));
+		assertTrue(nfa.addTransition("q0", Set.of("q2"), 'a'));
+
+		assertTrue(nfa.addTransition("q1", Set.of("q1"), 'c'));
+		assertTrue(nfa.addTransition("q1", Set.of("q3"), 'a'));
+
+		assertTrue(nfa.addTransition("q2", Set.of("q1"), 'c'));
+		assertTrue(nfa.addTransition("q2", Set.of("q2"), 'b'));
+		assertTrue(nfa.addTransition("q2", Set.of("q3"), 'e'));
+
+		assertTrue(nfa.addTransition("q3", Set.of("q3"), 'a'));
+		assertTrue(nfa.addTransition("q3", Set.of("q4"), 'b'));
+		assertTrue(nfa.addTransition("q3", Set.of("q4"), 'c'));
+
+		assertTrue(nfa.addTransition("q4", Set.of("q5"), 'b'));
+		assertTrue(nfa.addTransition("q4", Set.of("q5"), 'c'));
+
+		assertFalse(nfa.addTransition("q0", Set.of("q8"), 'a'));
+		assertFalse(nfa.addTransition("q3", Set.of("q3"), 'd'));
+		assertFalse(nfa.addTransition("ZZ", Set.of("W","Z"), 'e'));
+
+		return nfa;
+	}
+
+	@Test
+	public void test4_5() {
+		NFA nfa = nfa4();
+		assertTrue(nfa.accepts("caacb"));
+		assertTrue(nfa.accepts("abbccaab"));
+		assertTrue(nfa.accepts("ccaaacc"));
+		assertFalse(nfa.accepts("caacbb"));
+		assertFalse(nfa.accepts("accabc"));
+		System.out.println("nfa1 accepts done");
+	}
 }
