@@ -39,8 +39,12 @@ INCLUDED FILES:*****************************************************************
 COMPILING AND RUNNING:***********************************************************************************
 
 
- Run the test class with the command:
- $ java NFATest
+ To compile the files:
+ $ javac -cp .:/usr/share/java/junit.jar ./test/nfa/NFATest.java
+ 
+ To run the files:
+ $ java -cp .:/usr/share/java/junit.jar:/usr/share/java/hamcrest/core.jar
+ org.junit.runner.JUnitCore test.nfa.NFATest
 
 
 EXPECTED BEHAVIOR:***************************************************************************************
