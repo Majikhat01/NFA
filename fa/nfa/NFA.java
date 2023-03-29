@@ -5,12 +5,16 @@ import java.util.*;
 public class NFA implements NFAInterface {
 
     //Private variables
-    private Set<NFAState> states = new LinkedHashSet<>();
-    private Set<Character> sigma = new LinkedHashSet<>();
-    private Set<NFAState> finalStates = new LinkedHashSet<>();
+    private Set<NFAState> states;
+    private Set<Character> sigma;
+    private Set<NFAState> finalStates;
 
     //Constructor
-    public NFA() {}
+    public NFA() {
+        states = new LinkedHashSet<>();
+        sigma = new LinkedHashSet<>();
+        finalStates = new LinkedHashSet<>();
+    }
 
     @Override
     public boolean addState(String name) {

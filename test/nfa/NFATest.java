@@ -11,31 +11,65 @@ import fa.nfa.NFA;
 public class NFATest {
 
 	private NFA nfa1() {
+		long elapsedTime1;
+		long elapsedTime2;
+		long elapsedTime3;
+		long elapsedTime4;
+		long elapsedTime5;
+		long elapsedTime6;
+		long elapsedTime7;
+
+		long startTime = System.nanoTime();
 		NFA nfa = new NFA();
+		elapsedTime1 = System.nanoTime() - startTime;
+
 
 		nfa.addSigma('0');
 		nfa.addSigma('1');
+		elapsedTime2 = System.nanoTime() - startTime;
+
 
 		assertTrue(nfa.addState("a"));
 		assertTrue(nfa.setStart("a"));
+		elapsedTime3 = System.nanoTime() - startTime;
+
 
 		assertTrue(nfa.addState("b"));
 		assertTrue(nfa.setFinal("b"));
+		elapsedTime4 = System.nanoTime() - startTime;
+
 
 		assertFalse(nfa.addState("a"));
 		assertFalse(nfa.setStart("c"));
 		assertFalse(nfa.setFinal("d"));
+		elapsedTime5 = System.nanoTime() - startTime;
+
 
 
 		assertTrue(nfa.addTransition("a", Set.of("a"), '0'));
 		assertTrue(nfa.addTransition("a", Set.of("b"), '1'));
 		assertTrue(nfa.addTransition("b", Set.of("a"), 'e'));
+		elapsedTime6 = System.nanoTime() - startTime;
 
 		assertFalse(nfa.addTransition("c", Set.of("a"), '0'));
 		assertFalse(nfa.addTransition("a", Set.of("b"), '3'));
 		assertFalse(nfa.addTransition("b", Set.of("d","c"), 'e'));
+		elapsedTime7 = System.nanoTime() - startTime;
 
+		elapsedTime7 = elapsedTime7 - elapsedTime6;
+		elapsedTime6 = elapsedTime6 - elapsedTime5;
+		elapsedTime5 = elapsedTime5 - elapsedTime4;
+		elapsedTime4 = elapsedTime4 - elapsedTime3;
+		elapsedTime3 = elapsedTime3 - elapsedTime2;
+		elapsedTime2 = elapsedTime2 - elapsedTime1;
 
+		System.out.println(elapsedTime1);
+		System.out.println(elapsedTime2);
+		System.out.println(elapsedTime3);
+		System.out.println(elapsedTime4);
+		System.out.println(elapsedTime5);
+		System.out.println(elapsedTime6);
+		System.out.println(elapsedTime7);
 
 		return nfa;
 
